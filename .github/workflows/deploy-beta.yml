@@ -49,4 +49,4 @@ jobs:
         run: yarn install
 
       - name: Build Project
-        run: APP_ENV=beta VERSION=${{ github.event.inputs.version }} yarn build
+        run: APP_ENV=beta VERSION=${{ github.event.inputs.version || steps.latest-release.outputs.version }} yarn build
