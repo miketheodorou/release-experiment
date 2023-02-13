@@ -1,0 +1,51 @@
+name: Build and Deploy Beta
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version of release (if no version is specified, the latest tag will be used)
+        type: string
+
+jobs:
+  build_and_deploy_beta:
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Checkout branch
+        if: ${{ github.event.inputs.version }}
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.version }}
+          fetch-depth: 0
+
+      - name: Get Latest release
+        id: latest-release
+        if: ${{ !github.event.inputs.version }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.PAT }}
+          script: |
+            const { data: { tag_name } } = await octokit.rest.repos.getLatestRelease({ owner: "mlbtv", repo: "ps5" })
+
+            core.setOutput('version', tag_name)
+
+      - name: Checkout branch
+        if: ${{ !github.event.inputs.version }}
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.latest-release.outputs.version }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Build Project
+        run: APP_ENV=beta VERSION=${{ github.event.inputs.version }} yarn build
