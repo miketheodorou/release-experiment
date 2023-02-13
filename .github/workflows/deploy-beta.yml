@@ -12,7 +12,7 @@ jobs:
     runs-on: [self-hosted]
 
     steps:
-      - name: Checkout branch
+      - name: Checkout Version Tag
         if: ${{ github.event.inputs.version }}
         uses: actions/checkout@v3
         with:
@@ -30,7 +30,7 @@ jobs:
 
             core.setOutput('version', tag_name)
 
-      - name: Checkout branch
+      - name: Checkout Latest Release Tag
         if: ${{ !github.event.inputs.version }}
         uses: actions/checkout@v3
         with:
@@ -41,6 +41,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+
       - name: Install Yarn
         run: npm install -g yarn
 
