@@ -26,7 +26,7 @@ jobs:
         with:
           github-token: ${{ secrets.PAT }}
           script: |
-            const { data: { tag_name } } = await github.rest.repos.getLatestRelease({ owner: "mlbtv", repo: "ps5" })
+            const { data: { tag_name } } = await github.rest.repos.getLatestRelease({ owner: "miketheodorou", repo: "release-experiment" })
 
             core.setOutput('version', tag_name)
 
